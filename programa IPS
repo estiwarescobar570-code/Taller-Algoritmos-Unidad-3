@@ -1,0 +1,217 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Arreglos para guardar la información de los pacientes
+        string[] documentos = new string[30];
+        string[] nombres = new string[30];
+        int[] edades = new int[30];
+        string[] tiposAtencion = new string[30];
+        int[] prioridades = new int[30];
+
+        int cantidadPacientes = 0;
+        int cuposDisponibles;
+
+        // Pedimos cuántos cupos hay para atender pacientes
+        Console.Write("¿Cuántos cupos de atención hay disponibles hoy? ");
+        cuposDisponibles = int.Parse(Console.ReadLine());
+
+        // Menú principal
+        int opcion = 0;
+
+        while (opcion != 6)
+        {
+            Console.WriteLine("\n--- SISTEMA DE TURNOS IPS ---");
+            Console.WriteLine("1. Registrar paciente");
+            Console.WriteLine("2. Mostrar listado general");
+            Console.WriteLine("3. Buscar paciente por documento");
+            Console.WriteLine("4. Mostrar cantidad por tipo de atención");
+            Console.WriteLine("5. Mostrar paciente con mayor prioridad");
+            Console.WriteLine("6. Salir");
+            Console.Write("Seleccione una opción: ");
+            opcion = int.Parse(Console.ReadLine());
+
+            if (opcion == 1)
+            {
+                // Revisamos si hay espacio para registrar otro paciente
+                if (cantidadPacientes >= 30)
+                {
+                    Console.WriteLine("Ya se alcanzó el límite de 30 pacientes.");
+                }
+                else
+                {
+                    Console.Write("Número de documento: ");
+                    documentos[cantidadPacientes] = Console.ReadLine();
+
+                    Console.Write("Nombre completo: ");
+                    nombres[cantidadPacientes] = Console.ReadLine();
+
+                    Console.Write("Edad: ");
+                    edades[cantidadPacientes] = int.Parse(Console.ReadLine());
+
+                    // Elegir el tipo de atención
+                    Console.WriteLine("Tipo de atención:");
+                    Console.WriteLine("1. Urgencias");
+                    Console.WriteLine("2. Consulta General");
+                    Console.WriteLine("3. Prioritaria");
+                    Console.Write("Seleccione una opción: ");
+                    int opcionAtencion = int.Parse(Console.ReadLine());
+
+                    if (opcionAtencion == 1)
+                    {
+                        tiposAtencion[cantidadPacientes] = "Urgencias";
+                    }
+                    else if (opcionAtencion == 2)
+                    {
+                        tiposAtencion[cantidadPacientes] = "Consulta General";
+                    }
+                    else if (opcionAtencion == 3)
+                    {
+                        tiposAtencion[cantidadPacientes] = "Prioritaria";
+                    }
+                    else
+                    {
+                        Console.WriteLine("Opción incorrecta. Se asignará Consulta General.");
+                        tiposAtencion[cantidadPacientes] = "Consulta General";
+                    }
+
+                    // Validar que la prioridad esté entre 1 y 5
+                    Console.Write("Nivel de prioridad (1 a 5): ");
+                    prioridades[cantidadPacientes] = int.Parse(Console.ReadLine());
+
+                    while (prioridades[cantidadPacientes] < 1 ||
+                           prioridades[cantidadPacientes] > 5)
+                    {
+                        Console.Write("Valor inválido. Escriba un número del 1 al 5: ");
+                        prioridades[cantidadPacientes] = int.Parse(Console.ReadLine());
+                    }
+
+                    cantidadPacientes++;
+
+                    // Validar si hay cupos disponibles para atender
+                    if (cuposDisponibles > 0)
+                    {
+                        cuposDisponibles--;
+                        Console.WriteLine("Paciente registrado. Tiene cupo disponible para atención.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Paciente registrado, pero no hay cupos disponibles por ahora.");
+                    }
+                }
+            }
+            else if (opcion == 2)
+            {
+                // Mostrar todos los pacientes registrados
+                if (cantidadPacientes == 0)
+                {
+                    Console.WriteLine("Todavía no hay pacientes registrados.");
+                }
+                else
+                {
+                    Console.WriteLine("\n--- LISTADO DE PACIENTES ---");
+
+                    for (int i = 0; i < cantidadPacientes; i++)
+                    {
+                        Console.WriteLine("\nPaciente #" + (i + 1));
+                        Console.WriteLine("Documento: " + documentos[i]);
+                        Console.WriteLine("Nombre: " + nombres[i]);
+                        Console.WriteLine("Edad: " + edades[i]);
+                        Console.WriteLine("Tipo de atención: " + tiposAtencion[i]);
+                        Console.WriteLine("Prioridad: " + prioridades[i]);
+                    }
+                }
+            }
+            else if (opcion == 3)
+            {
+                // Buscar un paciente usando su documento
+                Console.Write("Escriba el documento que desea buscar: ");
+                string documentoBuscado = Console.ReadLine();
+                bool encontrado = false;
+
+                for (int i = 0; i < cantidadPacientes; i++)
+                {
+                    if (documentos[i] == documentoBuscado)
+                    {
+                        Console.WriteLine("\nPaciente encontrado:");
+                        Console.WriteLine("Nombre: " + nombres[i]);
+                        Console.WriteLine("Edad: " + edades[i]);
+                        Console.WriteLine("Tipo de atención: " + tiposAtencion[i]);
+                        Console.WriteLine("Prioridad: " + prioridades[i]);
+                        encontrado = true;
+                    }
+                }
+
+                if (encontrado == false)
+                {
+                    Console.WriteLine("No se encontró un paciente con ese documento.");
+                }
+            }
+            else if (opcion == 4)
+            {
+                // Contar pacientes de cada tipo de atención
+                int urgencias = 0;
+                int consultaGeneral = 0;
+                int prioritaria = 0;
+
+                for (int i = 0; i < cantidadPacientes; i++)
+                {
+                    if (tiposAtencion[i] == "Urgencias")
+                    {
+                        urgencias++;
+                    }
+                    else if (tiposAtencion[i] == "Consulta General")
+                    {
+                        consultaGeneral++;
+                    }
+                    else if (tiposAtencion[i] == "Prioritaria")
+                    {
+                        prioritaria++;
+                    }
+                }
+
+                Console.WriteLine("\n--- PACIENTES POR TIPO DE ATENCIÓN ---");
+                Console.WriteLine("Urgencias: " + urgencias);
+                Console.WriteLine("Consulta General: " + consultaGeneral);
+                Console.WriteLine("Prioritaria: " + prioritaria);
+            }
+            else if (opcion == 5)
+            {
+                // Buscar el paciente con el número de prioridad más alto
+                if (cantidadPacientes == 0)
+                {
+                    Console.WriteLine("Todavía no hay pacientes registrados.");
+                }
+                else
+                {
+                    int posicionMayorPrioridad = 0;
+
+                    for (int i = 1; i < cantidadPacientes; i++)
+                    {
+                        if (prioridades[i] > prioridades[posicionMayorPrioridad])
+                        {
+                            posicionMayorPrioridad = i;
+                        }
+                    }
+
+                    Console.WriteLine("\n--- PACIENTE CON MAYOR PRIORIDAD ---");
+                    Console.WriteLine("Documento: " + documentos[posicionMayorPrioridad]);
+                    Console.WriteLine("Nombre: " + nombres[posicionMayorPrioridad]);
+                    Console.WriteLine("Edad: " + edades[posicionMayorPrioridad]);
+                    Console.WriteLine("Tipo de atención: " + tiposAtencion[posicionMayorPrioridad]);
+                    Console.WriteLine("Prioridad: " + prioridades[posicionMayorPrioridad]);
+                }
+            }
+            else if (opcion == 6)
+            {
+                Console.WriteLine("Saliendo del programa...");
+            }
+            else
+            {
+                Console.WriteLine("Opción no válida. Intente nuevamente.");
+            }
+        }
+    }
+}
