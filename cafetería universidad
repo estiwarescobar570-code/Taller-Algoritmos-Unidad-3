@@ -1,0 +1,210 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Arreglos para guardar los datos de hasta 20 productos
+        string[] codigos = new string[20];
+        string[] nombres = new string[20];
+        double[] precios = new double[20];
+        int[] cantidades = new int[20];
+        string[] categorias = new string[20];
+
+        int cantidadProductos = 0;
+        double totalVendidoDelDia = 0;
+        int opcion = 0;
+
+        // Menú principal
+        while (opcion != 6)
+        {
+            Console.WriteLine("\n--- INVENTARIO DE CAFETERÍA ---");
+            Console.WriteLine("1. Registrar producto");
+            Console.WriteLine("2. Realizar venta");
+            Console.WriteLine("3. Actualizar inventario");
+            Console.WriteLine("4. Mostrar productos agotados");
+            Console.WriteLine("5. Mostrar total vendido del día");
+            Console.WriteLine("6. Salir");
+            Console.Write("Seleccione una opción: ");
+
+            opcion = int.Parse(Console.ReadLine());
+
+            if (opcion == 1)
+            {
+                // Validar que todavía haya espacio para productos
+                if (cantidadProductos >= 20)
+                {
+                    Console.WriteLine("No se pueden registrar más productos.");
+                }
+                else
+                {
+                    Console.Write("Código: ");
+                    codigos[cantidadProductos] = Console.ReadLine();
+
+                    Console.Write("Nombre: ");
+                    nombres[cantidadProductos] = Console.ReadLine();
+
+                    Console.Write("Precio unitario: ");
+                    precios[cantidadProductos] = double.Parse(Console.ReadLine());
+
+                    while (precios[cantidadProductos] < 0)
+                    {
+                        Console.Write("El precio no puede ser negativo. Ingrese nuevamente: ");
+                        precios[cantidadProductos] = double.Parse(Console.ReadLine());
+                    }
+
+                    Console.Write("Cantidad disponible: ");
+                    cantidades[cantidadProductos] = int.Parse(Console.ReadLine());
+
+                    while (cantidades[cantidadProductos] < 0)
+                    {
+                        Console.Write("La cantidad no puede ser negativa. Ingrese nuevamente: ");
+                        cantidades[cantidadProductos] = int.Parse(Console.ReadLine());
+                    }
+
+                    // Elegir una categoría
+                    Console.WriteLine("Categoría:");
+                    Console.WriteLine("1. Bebidas");
+                    Console.WriteLine("2. Panadería");
+                    Console.WriteLine("3. Snacks");
+                    Console.Write("Seleccione una opción: ");
+                    int opcionCategoria = int.Parse(Console.ReadLine());
+
+                    if (opcionCategoria == 1)
+                    {
+                        categorias[cantidadProductos] = "Bebidas";
+                    }
+                    else if (opcionCategoria == 2)
+                    {
+                        categorias[cantidadProductos] = "Panadería";
+                    }
+                    else if (opcionCategoria == 3)
+                    {
+                        categorias[cantidadProductos] = "Snacks";
+                    }
+                    else
+                    {
+                        Console.WriteLine("Opción incorrecta. Se asignará Snacks.");
+                        categorias[cantidadProductos] = "Snacks";
+                    }
+
+                    cantidadProductos++;
+                    Console.WriteLine("Producto registrado correctamente.");
+                }
+            }
+            else if (opcion == 2)
+            {
+                // Vender un producto buscando su código
+                Console.Write("Ingrese el código del producto que desea vender: ");
+                string codigoBuscado = Console.ReadLine();
+                int posicion = -1;
+
+                for (int i = 0; i < cantidadProductos; i++)
+                {
+                    if (codigos[i] == codigoBuscado)
+                    {
+                        posicion = i;
+                    }
+                }
+
+                if (posicion == -1)
+                {
+                    Console.WriteLine("No se encontró un producto con ese código.");
+                }
+                else if (cantidades[posicion] == 0)
+                {
+                    Console.WriteLine("No se puede vender: el producto está agotado.");
+                }
+                else
+                {
+                    Console.Write("Cantidad que desea vender: ");
+                    int cantidadVenta = int.Parse(Console.ReadLine());
+
+                    while (cantidadVenta <= 0 || cantidadVenta > cantidades[posicion])
+                    {
+                        Console.Write("Cantidad no válida o sin suficiente stock. Ingrese nuevamente: ");
+                        cantidadVenta = int.Parse(Console.ReadLine());
+                    }
+
+                    // Actualizar el inventario y sumar la venta del día
+                    cantidades[posicion] = cantidades[posicion] - cantidadVenta;
+                    double valorVenta = precios[posicion] * cantidadVenta;
+                    totalVendidoDelDia = totalVendidoDelDia + valorVenta;
+
+                    Console.WriteLine("Venta realizada por: $" + valorVenta);
+                    Console.WriteLine("Unidades restantes: " + cantidades[posicion]);
+                }
+            }
+            else if (opcion == 3)
+            {
+                // Actualizar la cantidad disponible de un producto
+                Console.Write("Ingrese el código del producto: ");
+                string codigoBuscado = Console.ReadLine();
+                int posicion = -1;
+
+                for (int i = 0; i < cantidadProductos; i++)
+                {
+                    if (codigos[i] == codigoBuscado)
+                    {
+                        posicion = i;
+                    }
+                }
+
+                if (posicion == -1)
+                {
+                    Console.WriteLine("No se encontró un producto con ese código.");
+                }
+                else
+                {
+                    Console.Write("Cantidad que desea agregar al inventario: ");
+                    int cantidadAgregar = int.Parse(Console.ReadLine());
+
+                    while (cantidadAgregar <= 0)
+                    {
+                        Console.Write("Ingrese una cantidad mayor que cero: ");
+                        cantidadAgregar = int.Parse(Console.ReadLine());
+                    }
+
+                    cantidades[posicion] = cantidades[posicion] + cantidadAgregar;
+                    Console.WriteLine("Inventario actualizado. Cantidad actual: " +
+                                      cantidades[posicion]);
+                }
+            }
+            else if (opcion == 4)
+            {
+                // Mostrar los productos que ya no tienen unidades disponibles
+                Console.WriteLine("\n--- PRODUCTOS AGOTADOS ---");
+                bool hayAgotados = false;
+
+                for (int i = 0; i < cantidadProductos; i++)
+                {
+                    if (cantidades[i] == 0)
+                    {
+                        Console.WriteLine(codigos[i] + " - " + nombres[i]);
+                        hayAgotados = true;
+                    }
+                }
+
+                if (hayAgotados == false)
+                {
+                    Console.WriteLine("No hay productos agotados.");
+                }
+            }
+            else if (opcion == 5)
+            {
+                // Mostrar el total acumulado de las ventas
+                Console.WriteLine("Total vendido del día: $" +
+                                  totalVendidoDelDia);
+            }
+            else if (opcion == 6)
+            {
+                Console.WriteLine("Saliendo del programa...");
+            }
+            else
+            {
+                Console.WriteLine("Opción no válida. Intente nuevamente.");
+            }
+        }
+    }
+}
+``)
