@@ -1,0 +1,122 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Arreglos para guardar los datos de los 10 operarios
+        string[] codigos = new string[10];
+        string[] nombres = new string[10];
+
+        // La matriz guarda la producción de cada operario durante 5 días
+        int[,] produccion = new int[10, 5];
+
+        // Registrar a los operarios e ingresar su producción diaria
+        for (int operario = 0; operario < 10; operario++)
+        {
+            Console.WriteLine("\n--- Registro del operario " + (operario + 1) + " ---");
+
+            Console.Write("Código del operario: ");
+            codigos[operario] = Console.ReadLine();
+
+            Console.Write("Nombre: ");
+            nombres[operario] = Console.ReadLine();
+
+            // Ingresar producción de lunes a viernes
+            for (int dia = 0; dia < 5; dia++)
+            {
+                Console.Write("Producción del día " + (dia + 1) + ": ");
+                produccion[operario, dia] = int.Parse(Console.ReadLine());
+
+                // Validar que la producción no sea negativa
+                while (produccion[operario, dia] < 0)
+                {
+                    Console.Write("El valor no puede ser negativo. Ingrese nuevamente: ");
+                    produccion[operario, dia] = int.Parse(Console.ReadLine());
+                }
+            }
+        }
+
+        // Variables para calcular el promedio general
+        int produccionTotal = 0;
+        int mejorProduccion = -1;
+        int mejorOperario = 0;
+
+        Console.WriteLine("\n--- PRODUCCIÓN SEMANAL POR OPERARIO ---");
+
+        // Calcular la producción semanal de cada operario
+        for (int operario = 0; operario < 10; operario++)
+        {
+            int totalSemanal = 0;
+
+            for (int dia = 0; dia < 5; dia++)
+            {
+                totalSemanal = totalSemanal + produccion[operario, dia];
+                produccionTotal = produccionTotal + produccion[operario, dia];
+            }
+
+            Console.WriteLine(nombres[operario] + " (" + codigos[operario] +
+                              "): " + totalSemanal + " unidades");
+
+            // Guardar al operario que tenga la mayor producción semanal
+            if (totalSemanal > mejorProduccion)
+            {
+                mejorProduccion = totalSemanal;
+                mejorOperario = operario;
+            }
+        }
+
+        // Mostrar el mejor operario de la semana
+        Console.WriteLine("\n--- MEJOR OPERARIO DE LA SEMANA ---");
+        Console.WriteLine("Nombre: " + nombres[mejorOperario]);
+        Console.WriteLine("Código: " + codigos[mejorOperario]);
+        Console.WriteLine("Producción semanal: " + mejorProduccion + " unidades");
+
+        // Hay 50 registros: 10 operarios por 5 días
+        double promedioGeneral = produccionTotal / 50.0;
+
+        Console.WriteLine("\nPromedio general diario por operario: " +
+                          promedioGeneral.ToString("0.00") + " unidades");
+
+        // Calcular el total producido cada día
+        Console.WriteLine("\n--- PRODUCCIÓN TOTAL POR DÍA ---");
+
+        string[] nombresDias = { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes" };
+        int[] totalPorDia = new int[5];
+
+        for (int dia = 0; dia < 5; dia++)
+        {
+            for (int operario = 0; operario < 10; operario++)
+            {
+                totalPorDia[dia] = totalPorDia[dia] + produccion[operario, dia];
+            }
+
+            Console.WriteLine(nombresDias[dia] + ": " + totalPorDia[dia] + " unidades");
+        }
+
+        // El usuario indica el límite para considerar un día de baja producción
+        Console.Write("\nIngrese el límite para detectar baja producción diaria: ");
+        int limiteBaja = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("\n--- DÍAS CON BAJA PRODUCCIÓN ---");
+        bool hayDiasBajos = false;
+
+        for (int dia = 0; dia < 5; dia++)
+        {
+            if (totalPorDia[dia] < limiteBaja)
+            {
+                Console.WriteLine(nombresDias[dia] + ": " +
+                                  totalPorDia[dia] + " unidades");
+                hayDiasBajos = true;
+            }
+        }
+
+        if (hayDiasBajos == false)
+        {
+            Console.WriteLine("No se detectaron días con baja producción.");
+        }
+
+        Console.WriteLine("\nPresione una tecla para terminar.");
+        Console.ReadKey();
+    }
+}
